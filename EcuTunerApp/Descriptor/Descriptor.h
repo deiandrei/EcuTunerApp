@@ -25,14 +25,25 @@ namespace EcuTuner {
 		double UnParse(double input) {
 			return (input - ValueOffset) / ValueFactor;
 		}
+
+		int GetOffset(int index) {
+			return index;
+		}
 	};
 
 	struct DataAxis : Axis {
 		int Rows;
 		int Columns;
 
+		bool InverseMap;
+
 		DataAxis() {
 			Rows = Columns = 0;
+			InverseMap = false;
+		}
+
+		int GetTableOffset(int row, int column) {
+			return (InverseMap ? (Rows * column + row) : (Columns * row + column));
 		}
 	};
 
@@ -47,7 +58,7 @@ namespace EcuTuner {
 			QString Name;
 			QString Alias;
 
-			bool InverseMap;
+			
 
 	};
 

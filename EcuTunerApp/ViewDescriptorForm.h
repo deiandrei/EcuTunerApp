@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QWidget>
+#include <QMdiSubWindow>
 #include "ui_ViewDescriptorForm.h"
 
 #include "Descriptor/Descriptor.h"
@@ -13,8 +13,6 @@ class ViewDescriptorForm : public QWidget
 	public:
 		ViewDescriptorForm(EcuTuner::EcuFile* file, EcuTuner::Descriptor* descriptor, QWidget* parent = nullptr);
 		~ViewDescriptorForm();
-
-		void UpdateUI();
 
 	private:
 		Ui::ViewDescriptorFormClass ui;

@@ -26,6 +26,7 @@ MainForm::MainForm(QWidget *parent) : QMainWindow(parent) {
         dataAxis->Rows = 16;
         dataAxis->Columns = 16;
         dataAxis->ValueFactor = 0.0234375;
+        dataAxis->InverseMap = true;
 
         EcuTuner::Axis* xAxis = new EcuTuner::Axis;
         xAxis->Offset = 86156;
@@ -41,7 +42,6 @@ MainForm::MainForm(QWidget *parent) : QMainWindow(parent) {
         descriptor->AxisData = dataAxis;
         descriptor->AxisX = xAxis;
         descriptor->AxisY = yAxis;
-        descriptor->InverseMap = true;
 
         descriptors.push_back(descriptor);
     }
@@ -62,7 +62,6 @@ MainForm::MainForm(QWidget *parent) : QMainWindow(parent) {
         descriptor->Alias = "LDRXN";
         descriptor->AxisData = dataAxis;
         descriptor->AxisX = xAxis;
-        descriptor->InverseMap = true;
 
         descriptors.push_back(descriptor);
     }
@@ -71,8 +70,9 @@ MainForm::MainForm(QWidget *parent) : QMainWindow(parent) {
     ui.mapsTableView->setModel(descriptorModel);
 
     QObject::connect(ui.mapsTableView, &QTableView::doubleClicked, [&](const QModelIndex& index) {
-        ViewDescriptorForm* vdForm = new ViewDescriptorForm(m_file, descriptorModel->getItemAtIndex(index)->GetDescriptor());
-        vdForm->show();
+        ViewDescriptorForm* vdForm = new ViewDescriptorForm(m_file, descriptorModel->getItemAtIndex(index)->GetDescriptor(), ui.mainArea);
+        ui.mainArea->addSubWindow(vdForm);
+        vdForm->showNormal();
     });
 }
 

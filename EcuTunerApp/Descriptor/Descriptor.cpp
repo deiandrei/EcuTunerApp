@@ -5,8 +5,7 @@ namespace EcuTuner {
 	Descriptor::Descriptor() :
 		AxisData(nullptr),
 		AxisX(nullptr),
-		AxisY(nullptr),
-		InverseMap(false)
+		AxisY(nullptr)
 	{
 		
 	}

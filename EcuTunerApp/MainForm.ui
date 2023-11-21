@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1059</width>
-    <height>588</height>
+    <width>1282</width>
+    <height>756</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -82,10 +82,17 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QTableView" name="mapsTableView"/>
+       <widget class="QTableView" name="mapsTableView">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
       <item>
-       <widget class="QTextEdit" name="binaryTextEdit"/>
+       <widget class="QMdiArea" name="mainArea"/>
       </item>
      </layout>
     </item>
@@ -96,8 +103,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1059</width>
-     <height>26</height>
+     <width>1282</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>
