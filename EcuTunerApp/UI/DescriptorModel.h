@@ -15,27 +15,27 @@ class DescriptorModel : public QAbstractItemModel
 {
     Q_OBJECT
 
-public:
-    explicit DescriptorModel(QList<EcuTuner::Descriptor*> descriptors, QObject *parent = nullptr);
-    ~DescriptorModel();
+    public:
+        explicit DescriptorModel(QList<EcuTuner::Descriptor*> descriptors, QObject *parent = nullptr);
+        ~DescriptorModel();
 
-    QVariant data(const QModelIndex &index, int role) const override;
-	DescriptorModelItem* getItemAtIndex(const QModelIndex& index);
-    Qt::ItemFlags flags(const QModelIndex &index) const override;
-    QVariant headerData(int section, Qt::Orientation orientation,
-                        int role = Qt::DisplayRole) const override;
-    QModelIndex index(int row, int column,
-                      const QModelIndex &parent = QModelIndex()) const override;
-    QModelIndex parent(const QModelIndex &index) const override;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+        QVariant data(const QModelIndex &index, int role) const override;
+	    DescriptorModelItem* getItemAtIndex(const QModelIndex& index);
+        Qt::ItemFlags flags(const QModelIndex &index) const override;
+        QVariant headerData(int section, Qt::Orientation orientation,
+                            int role = Qt::DisplayRole) const override;
+        QModelIndex index(int row, int column,
+                          const QModelIndex &parent = QModelIndex()) const override;
+        QModelIndex parent(const QModelIndex &index) const override;
+        int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+        int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
-	void doubleClicked(const QModelIndex& index);
+	    void doubleClicked(const QModelIndex& index);
 
-    void addItem(EcuTuner::Descriptor* descriptor);
+        void addItem(EcuTuner::Descriptor* descriptor);
 
-private:
-    void setupModelData(DescriptorModelItem* parent, QList<EcuTuner::Descriptor*> descriptors);
+    private:
+        void setupModelData(DescriptorModelItem* parent, QList<EcuTuner::Descriptor*> descriptors);
 
     DescriptorModelItem *rootItem;
 };
