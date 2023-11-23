@@ -32,6 +32,8 @@ public:
 
 	void doubleClicked(const QModelIndex& index);
 
+    void addItem(EcuTuner::Descriptor* descriptor);
+
 private:
     void setupModelData(DescriptorModelItem* parent, QList<EcuTuner::Descriptor*> descriptors);
 

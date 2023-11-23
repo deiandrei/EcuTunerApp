@@ -7,13 +7,14 @@ namespace EcuTuner {
 
 	struct Axis {
 		int Offset;
+		int BlockSize;
 		
 		double ValueFactor;
 		double ValueOffset;
 
 		Axis() {
 			Offset = 0;
-			
+			BlockSize = 1;
 			ValueFactor = 1.0;
 			ValueOffset = 0.0;
 		}
@@ -27,7 +28,7 @@ namespace EcuTuner {
 		}
 
 		int GetOffset(int index) {
-			return index;
+			return (Offset + index * BlockSize);
 		}
 	};
 
@@ -43,7 +44,7 @@ namespace EcuTuner {
 		}
 
 		int GetTableOffset(int row, int column) {
-			return (InverseMap ? (Rows * column + row) : (Columns * row + column));
+			return (Offset + (InverseMap ? (Rows * column + row) : (Columns * row + column)) * BlockSize);
 		}
 	};
 

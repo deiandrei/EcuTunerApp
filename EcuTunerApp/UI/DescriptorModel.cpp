@@ -113,3 +113,8 @@ void DescriptorModel::setupModelData(DescriptorModelItem* parent, QList<EcuTuner
 		parent->appendChild(item);
 	}
 }
+
+void DescriptorModel::addItem(EcuTuner::Descriptor* descriptor) {
+    DescriptorModelItem* item = new DescriptorModelItem(descriptor, rootItem);
+    rootItem->appendChild(item);
+}

@@ -17,6 +17,7 @@ class MainForm : public QMainWindow
 
     public slots:
         void BrowseButton_Clicked();
+        void OpenDescriptorForm(const QModelIndex& index);
 
     private:
         Ui::MainFormClass ui;

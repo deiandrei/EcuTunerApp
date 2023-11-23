@@ -14,6 +14,8 @@ class ViewDescriptorForm : public QWidget
 		ViewDescriptorForm(EcuTuner::EcuFile* file, EcuTuner::Descriptor* descriptor, QWidget* parent = nullptr);
 		~ViewDescriptorForm();
 
+		EcuTuner::Descriptor* GetDescriptor() { return m_descriptor; }
+
 	private:
 		Ui::ViewDescriptorFormClass ui;
 

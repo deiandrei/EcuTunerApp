@@ -1,6 +1,7 @@
 #include "DescriptorTableModel.h"
 
 #include <QBrush>
+#include "../Descriptor/DescriptorReader.h"
 
 DescriptorTableModel::DescriptorTableModel(EcuTuner::EcuFile* file, EcuTuner::Descriptor* descriptor, QObject* parent) : QAbstractTableModel(parent),
     m_ecuFile(file),
@@ -45,24 +46,14 @@ QVariant DescriptorTableModel::headerData(int section, Qt::Orientation orientati
 
     if (role == Qt::DisplayRole) {
         if (orientation == Qt::Horizontal && m_descriptor->AxisX) {
-            int blockSize = 2;
+            double data = EcuTuner::DescriptorReader::ReadAxisValue(bb, m_descriptor->AxisX, section);
 
-            int dataPos = m_descriptor->AxisX->Offset + m_descriptor->AxisX->GetOffset(section) * blockSize; // merge everything into one function later when we add logic for blocksize
-
-            bb->Position() = dataPos;
-            uint2 data = bb->Read<uint2>();
-
-            return QString::number(m_descriptor->AxisX->Parse(data));
+            return QString::number(data);
         }
         else if (orientation == Qt::Vertical && m_descriptor->AxisY) {
-            int blockSize = 2;
+            double data = EcuTuner::DescriptorReader::ReadAxisValue(bb, m_descriptor->AxisY, section);
 
-            int dataPos = m_descriptor->AxisY->Offset + m_descriptor->AxisY->GetOffset(section) * blockSize; // merge everything into one function later when we add logic for blocksize
-
-            bb->Position() = dataPos;
-            uint2 data = bb->Read<uint2>();
-
-            return QString::number(m_descriptor->AxisY->Parse(data));
+            return QString::number(data);
         }
     }
 
@@ -76,14 +67,9 @@ QVariant DescriptorTableModel::data(const QModelIndex& index, int role) const {
     if (!dataAxis) return QVariant();
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        int blockSize = 2;
+        double data = EcuTuner::DescriptorReader::ReadDataAxisValue(bb, dataAxis, index.row(), index.column());
 
-        int dataPos = dataAxis->Offset + dataAxis->GetTableOffset(index.row(), index.column()) * blockSize; // merge everything into one function later when we add logic for blocksize
-        
-        bb->Position() = dataPos;
-        uint2 data = bb->Read<uint2>();
-
-        return QString::number(dataAxis->Parse(data));
+        return QString::number(data);
     }
     else if (role == Qt::BackgroundRole) {
         float normalizedDistance = (data(index, Qt::DisplayRole).toString().toDouble() - m_minValue) / (m_maxValue - m_minValue);
@@ -104,22 +90,18 @@ bool DescriptorTableModel::setData(const QModelIndex& index, const QVariant& val
     if (role == Qt::EditRole) {
         if (!checkIndex(index) || value == data(index, role)) return false;
         
-        int blockSize = 2;
-        int dataPos = dataAxis->Offset + dataAxis->GetTableOffset(index.row(), index.column()) * blockSize;  // merge everything into one function later when we add logic for blocksize
-
         bool conversionStatus = 0;
         double valueFromUI = value.toString().toDouble(&conversionStatus);
         if (!conversionStatus) return false;
 
-        uint2 valueToSet = dataAxis->UnParse(valueFromUI);
-
         m_maxValue = std::max(m_maxValue, valueFromUI);
         m_minValue = std::min(m_minValue, valueFromUI);
 
-        memcpy(m_ecuFile->GetBuffer()->Data() + dataPos, &valueToSet, blockSize);
-
+        EcuTuner::DescriptorReader::SetDataAxisValue(bb, dataAxis, index.row(), index.column(), valueFromUI);
+        
         return true;
     }
+
     return false;
 }
 

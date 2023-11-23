@@ -9,10 +9,22 @@ class ByteBuffer {
 		~ByteBuffer();
 		
 		template<typename T>
+		T Read(int position) {
+			T temp;
+
+			if (sizeof(T) + position > mSize) {
+				return T();
+			}
+
+			memcpy(&temp, mByteContainer + position, sizeof(T));
+			return temp;
+		}
+
+		template<typename T>
 		T Read() {
 			if (sizeof(T) + mPosition > mSize) {
 				mPosition = mSize;
-				return 0;
+				return T();
 			}
 
 			T temp;

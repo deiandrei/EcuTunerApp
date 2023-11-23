@@ -38,7 +38,7 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>5.12.12</QtInstall>
-    <QtModules>core;gui;network;widgets</QtModules>
+    <QtModules>core;gui;network;widgets;xml</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
@@ -89,6 +89,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Descriptor\DescriptorReader.cpp" />
     <ClCompile Include="UI\DescriptorModel.cpp" />
     <ClCompile Include="UI\DescriptorModelItem.cpp" />
     <ClCompile Include="UI\DescriptorTableModel.cpp" />
@@ -109,6 +110,7 @@
     <ClInclude Include="Common\Utils.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="Descriptor\Descriptor.h" />
+    <ClInclude Include="Descriptor\DescriptorReader.h" />
     <ClInclude Include="Ecu\File.h" />
     <QtMoc Include="UI\DescriptorTableModel.h" />
     <QtMoc Include="UI\DescriptorModel.h" />

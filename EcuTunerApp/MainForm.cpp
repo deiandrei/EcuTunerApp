@@ -7,6 +7,7 @@
 
 #include "Common/Utils.h"
 #include "Ecu/File.h"
+#include "Descriptor/DescriptorReader.h"
 
 #include "UI/DescriptorModel.h"
 #include "UI/DescriptorModelItem.h"
@@ -17,63 +18,7 @@ MainForm::MainForm(QWidget *parent) : QMainWindow(parent) {
     m_file = nullptr;
 
     connect(ui.browseEcuFileButton, &QPushButton::clicked, this, &MainForm::BrowseButton_Clicked);
-    
-    QList<EcuTuner::Descriptor*> descriptors;
-
-    {
-        EcuTuner::DataAxis* dataAxis = new EcuTuner::DataAxis;
-        dataAxis->Offset = 86220;
-        dataAxis->Rows = 16;
-        dataAxis->Columns = 16;
-        dataAxis->ValueFactor = 0.0234375;
-        dataAxis->InverseMap = true;
-
-        EcuTuner::Axis* xAxis = new EcuTuner::Axis;
-        xAxis->Offset = 86156;
-        xAxis->ValueFactor = 0.25;
-
-        EcuTuner::Axis* yAxis = new EcuTuner::Axis;
-        yAxis->Offset = 86188;
-        yAxis->ValueFactor = 0.001525878906;
-
-        EcuTuner::Descriptor* descriptor = new EcuTuner::Descriptor;
-        descriptor->Name = "Optimal torque";
-        descriptor->Alias = "KFMIOP";
-        descriptor->AxisData = dataAxis;
-        descriptor->AxisX = xAxis;
-        descriptor->AxisY = yAxis;
-
-        descriptors.push_back(descriptor);
-    }
-
-    {
-        EcuTuner::DataAxis* dataAxis = new EcuTuner::DataAxis;
-        dataAxis->Offset = 127094;
-        dataAxis->Rows = 1;
-        dataAxis->Columns = 16;
-        dataAxis->ValueFactor = 0.0234375;
-
-        EcuTuner::Axis* xAxis = new EcuTuner::Axis;
-        xAxis->Offset = 127062;
-        xAxis->ValueFactor = 0.25;
-
-        EcuTuner::Descriptor* descriptor = new EcuTuner::Descriptor;
-        descriptor->Name = "Maximum load";
-        descriptor->Alias = "LDRXN";
-        descriptor->AxisData = dataAxis;
-        descriptor->AxisX = xAxis;
-
-        descriptors.push_back(descriptor);
-    }
-
-    DescriptorModel* descriptorModel = new DescriptorModel(descriptors);
-    ui.mapsTableView->setModel(descriptorModel);
-
-    QObject::connect(ui.mapsTableView, &QTableView::doubleClicked, [&](const QModelIndex& index) {
-        ViewDescriptorForm* vdForm = new ViewDescriptorForm(m_file, descriptorModel->getItemAtIndex(index)->GetDescriptor(), ui.mainArea);
-        ui.mainArea->addSubWindow(vdForm);
-        vdForm->showNormal();
-    });
+    connect(ui.mapsTableView, &QTableView::doubleClicked, this, &MainForm::OpenDescriptorForm);
 }
 
 MainForm::~MainForm()
@@ -81,9 +26,43 @@ MainForm::~MainForm()
 
 void MainForm::BrowseButton_Clicked() {
     QString file = QFileDialog::getOpenFileName(nullptr, "Select ECU bin");
+    QString descriptorFile = QFileDialog::getOpenFileName(nullptr, "Select Descriptor file");
     
     ui.ecuFileLineEdit->setText(file);
     SetECUFile(file);
+
+    QList<EcuTuner::Descriptor*> descriptors;
+    if (!descriptorFile.isEmpty()) descriptors = EcuTuner::DescriptorReader::ReadDescriptorsFromFile(descriptorFile);
+
+    DescriptorModel* descriptorModel = new DescriptorModel(descriptors);
+    ui.mapsTableView->setModel(descriptorModel);
+}
+
+void MainForm::OpenDescriptorForm(const QModelIndex& index) {
+    EcuTuner::Descriptor* descriptor = ((DescriptorModel*)ui.mapsTableView->model())->getItemAtIndex(index)->GetDescriptor();
+    if (!descriptor) return;
+
+    // ShowNormal the current window if the window is maximized
+    auto* currentWindow = ui.mainArea->currentSubWindow();
+    if (currentWindow && currentWindow->isMaximized()) {
+        currentWindow->showNormal();
+    }
+
+    // Search for another window for the same descriptor and show that instead of creating a new one
+    for (auto* openSubWindow : ui.mainArea->subWindowList()) {
+        ViewDescriptorForm* castedWindow = dynamic_cast<ViewDescriptorForm*>(openSubWindow->widget());
+
+        if (castedWindow && castedWindow->GetDescriptor() == descriptor) {
+            openSubWindow->showNormal();
+            ui.mainArea->setActiveSubWindow(openSubWindow);
+            return;
+        }
+    }
+
+    // If no window was found, create the new one and ShowNormal it
+	ViewDescriptorForm* vdForm = new ViewDescriptorForm(m_file, descriptor, ui.mainArea);
+	ui.mainArea->addSubWindow(vdForm);
+	vdForm->showNormal();
 }
 
 void MainForm::SetECUFile(const QString& file) {

@@ -64,6 +64,9 @@
     <ClCompile Include="UI\DescriptorTableModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Descriptor\DescriptorReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Descriptor\Descriptor.h">
@@ -82,6 +85,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UI\DescriptorModelItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Descriptor\DescriptorReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
