@@ -8,6 +8,7 @@
 #include "Common/Utils.h"
 #include "Ecu/File.h"
 #include "Descriptor/DescriptorReader.h"
+#include "Descriptor/DescriptorConverter.h"
 
 #include "UI/DescriptorModel.h"
 #include "UI/DescriptorModelItem.h"
@@ -15,6 +16,9 @@
 
 MainForm::MainForm(QWidget *parent) : QMainWindow(parent) {
     ui.setupUi(this);
+    m_sortModel = new QSortFilterProxyModel(this);
+    m_sortModel->setRecursiveFilteringEnabled(true);
+
     m_file = nullptr;
 
     connect(ui.mapsTableView, &QTableView::doubleClicked, this, &MainForm::OpenDescriptorForm);
@@ -32,7 +36,8 @@ MainForm::MainForm(QWidget *parent) : QMainWindow(parent) {
         if (!descriptorFile.isEmpty()) descriptors = EcuTuner::DescriptorReader::ReadDescriptorsFromFile(descriptorFile);
 
         DescriptorModel* descriptorModel = new DescriptorModel(descriptors);
-        ui.mapsTableView->setModel(descriptorModel);
+        m_sortModel->setSourceModel(descriptorModel);
+        ui.mapsTableView->setModel(m_sortModel);
 
         ui.actionLoad_DescriptorPack->setEnabled(false); // disable it for now until I implement how to reload packs
     });
@@ -45,6 +50,36 @@ MainForm::MainForm(QWidget *parent) : QMainWindow(parent) {
             writer.write((char*)m_file->GetBuffer()->Data(), m_file->GetBuffer()->Size());
         }
     });
+
+    connect(ui.actionConvert_Csv_to_DescriptorPack, &QAction::triggered, [&]() {
+        QString descriptorFile = QFileDialog::getOpenFileName(nullptr, "Select CSV file");
+
+        if (!descriptorFile.isEmpty()) {
+            QList<EcuTuner::Descriptor*> descriptors = EcuTuner::DescriptorConverter::ConvertFromCsv(descriptorFile);
+
+            if (!descriptors.isEmpty()) {
+                DescriptorModel* descriptorModel = new DescriptorModel(descriptors);
+                m_sortModel->setSourceModel(descriptorModel);
+                ui.mapsTableView->setModel(m_sortModel);
+            }
+        }
+    });
+
+    connect(ui.descriptorSearchLineEdit, &QLineEdit::textChanged, [&](QString text) {
+        m_sortModel->setFilterFixedString(text);
+    });
+
+
+    /*float x0 = 0.0f;
+    float x1 = 217.6f;
+    int steps = 16;
+    float stepVal = (x1 - x0) / (float)(steps - 1);
+
+    QList<float> list;
+    for (int i = 0; i < 16; i++) {
+        list << i * stepVal;
+    }
+    int x = 0;*/
 }
 
 MainForm::~MainForm()
@@ -52,7 +87,7 @@ MainForm::~MainForm()
 
 
 void MainForm::OpenDescriptorForm(const QModelIndex& index) {
-    EcuTuner::Descriptor* descriptor = ((DescriptorModel*)ui.mapsTableView->model())->getItemAtIndex(index)->GetDescriptor();
+    EcuTuner::Descriptor* descriptor = static_cast<DescriptorModel*>(m_sortModel->sourceModel())->getItemAtIndex(m_sortModel->mapToSource(index))->GetDescriptor();
     if (!descriptor) return;
 
     // ShowNormal the current window if the window is maximized

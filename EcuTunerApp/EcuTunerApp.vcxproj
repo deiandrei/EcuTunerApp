@@ -89,6 +89,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Descriptor\DescriptorConverter.cpp" />
     <ClCompile Include="Descriptor\DescriptorReader.cpp" />
     <ClCompile Include="UI\DescriptorModel.cpp" />
     <ClCompile Include="UI\DescriptorModelItem.cpp" />
@@ -110,6 +111,7 @@
     <ClInclude Include="Common\Utils.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="Descriptor\Descriptor.h" />
+    <ClInclude Include="Descriptor\DescriptorConverter.h" />
     <ClInclude Include="Descriptor\DescriptorReader.h" />
     <ClInclude Include="Ecu\File.h" />
     <QtMoc Include="UI\DescriptorTableModel.h" />

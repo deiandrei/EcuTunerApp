@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1282</width>
+    <width>1272</width>
     <height>756</height>
    </rect>
   </property>
@@ -14,7 +14,7 @@
    <string>MainForm</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
@@ -75,14 +75,21 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QTableView" name="mapsTableView">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-       </widget>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QLineEdit" name="descriptorSearchLineEdit"/>
+        </item>
+        <item>
+         <widget class="QTableView" name="mapsTableView">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
        <widget class="QMdiArea" name="mainArea"/>
@@ -96,8 +103,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1282</width>
-     <height>21</height>
+     <width>1272</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -107,6 +114,7 @@
     <addaction name="actionLoad_ECU_File"/>
     <addaction name="actionLoad_DescriptorPack"/>
     <addaction name="actionSave_As"/>
+    <addaction name="actionConvert_Csv_to_DescriptorPack"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -150,6 +158,11 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionConvert_Csv_to_DescriptorPack">
+   <property name="text">
+    <string>Convert Csv to DescriptorPack</string>
    </property>
   </action>
  </widget>
