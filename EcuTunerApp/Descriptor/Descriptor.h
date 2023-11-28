@@ -44,7 +44,7 @@ namespace EcuTuner {
 		}
 
 		int GetTableOffset(int row, int column) {
-			return (Offset + (InverseMap ? (Rows * column + row) : (Columns * row + column)) * BlockSize);
+			return (Offset + (Columns * row + column) * BlockSize);
 		}
 	};
 

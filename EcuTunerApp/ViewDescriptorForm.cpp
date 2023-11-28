@@ -11,6 +11,7 @@ ViewDescriptorForm::ViewDescriptorForm(EcuTuner::EcuFile* file, EcuTuner::Descri
 	DescriptorTableModel* model = new DescriptorTableModel(file, descriptor);
 	ui.testTable->setModel(model);
 
+
 	this->setWindowTitle(m_descriptor->Alias + " | " + m_descriptor->Name + " | " + QString::number(m_descriptor->AxisData->Rows) + "x" + QString::number(m_descriptor->AxisData->Columns));
 }
 

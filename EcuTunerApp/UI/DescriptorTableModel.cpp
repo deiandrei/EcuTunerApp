@@ -32,29 +32,37 @@ void DescriptorTableModel::UpdateMinMax() {
 int DescriptorTableModel::rowCount(const QModelIndex& /*parent*/) const {
     if (!m_descriptor || !m_descriptor->AxisData) return 0;
 
-    return m_descriptor->AxisData->Rows;
+    return m_descriptor->AxisData->InverseMap ? m_descriptor->AxisData->Columns : m_descriptor->AxisData->Rows;
 }
 
 int DescriptorTableModel::columnCount(const QModelIndex& /*parent*/) const {
     if (!m_descriptor || !m_descriptor->AxisData) return 0;
 
-    return m_descriptor->AxisData->Columns;
+    return m_descriptor->AxisData->InverseMap ? m_descriptor->AxisData->Rows : m_descriptor->AxisData->Columns;
 }
 
 QVariant DescriptorTableModel::headerData(int section, Qt::Orientation orientation, int role) const {
     ByteBuffer* bb = m_ecuFile->GetBuffer();
 
     if (role == Qt::DisplayRole) {
-        if (orientation == Qt::Horizontal && m_descriptor->AxisX) {
-            double data = EcuTuner::DescriptorReader::ReadAxisValue(bb, m_descriptor->AxisX, section);
+        if (orientation == Qt::Horizontal && ((m_descriptor->AxisData->InverseMap && m_descriptor->AxisY) || (!m_descriptor->AxisData->InverseMap && m_descriptor->AxisX))) {
+            double data = EcuTuner::DescriptorReader::ReadAxisValue(bb, m_descriptor->AxisData->InverseMap ? m_descriptor->AxisY : m_descriptor->AxisX, section);
 
             return QString::number(data);
         }
-        else if (orientation == Qt::Vertical && m_descriptor->AxisY) {
-            double data = EcuTuner::DescriptorReader::ReadAxisValue(bb, m_descriptor->AxisY, section);
+        else if (orientation == Qt::Vertical && ((m_descriptor->AxisData->InverseMap && m_descriptor->AxisX) || (!m_descriptor->AxisData->InverseMap && m_descriptor->AxisY))) {
+            double data = EcuTuner::DescriptorReader::ReadAxisValue(bb, m_descriptor->AxisData->InverseMap ? m_descriptor->AxisX : m_descriptor->AxisY, section);
 
             return QString::number(data);
         }
+    }
+    else if (role == Qt::SizeHintRole) {
+        if (orientation == Qt::Horizontal) return QSize(50, 30);
+        else return QSize(75, 35);
+    }
+    else if (role == Qt::TextAlignmentRole) {
+        if (orientation == Qt::Horizontal) return Qt::AlignCenter;
+        else return Qt::AlignRight;
     }
 
     return QVariant();
@@ -67,7 +75,7 @@ QVariant DescriptorTableModel::data(const QModelIndex& index, int role) const {
     if (!dataAxis) return QVariant();
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        double data = EcuTuner::DescriptorReader::ReadDataAxisValue(bb, dataAxis, index.row(), index.column());
+        double data = dataAxis->InverseMap ? EcuTuner::DescriptorReader::ReadDataAxisValue(bb, dataAxis, index.column(), index.row()) : EcuTuner::DescriptorReader::ReadDataAxisValue(bb, dataAxis, index.row(), index.column());
 
         return QString::number(data);
     }
@@ -76,6 +84,9 @@ QVariant DescriptorTableModel::data(const QModelIndex& index, int role) const {
         normalizedDistance = std::min(std::max(normalizedDistance, 0.0f), 1.0f);
 
 		return QBrush(QColor::fromRgb((int)std::min(255.0f * 2.0f * normalizedDistance, 255.0f), (int)std::min(255.0f * 2.0f * (1.0f - normalizedDistance), 255.0f), 0));
+    }
+    else if (role == Qt::TextAlignmentRole) {
+        return Qt::AlignCenter;
     }
 
     return QVariant();
@@ -97,7 +108,8 @@ bool DescriptorTableModel::setData(const QModelIndex& index, const QVariant& val
         m_maxValue = std::max(m_maxValue, valueFromUI);
         m_minValue = std::min(m_minValue, valueFromUI);
 
-        EcuTuner::DescriptorReader::SetDataAxisValue(bb, dataAxis, index.row(), index.column(), valueFromUI);
+        if(dataAxis->InverseMap) EcuTuner::DescriptorReader::SetDataAxisValue(bb, dataAxis, index.column(), index.row(), valueFromUI);
+        else EcuTuner::DescriptorReader::SetDataAxisValue(bb, dataAxis, index.row(), index.column(), valueFromUI);
         
         return true;
     }

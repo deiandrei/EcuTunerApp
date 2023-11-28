@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtWidgets/QMainWindow>
+#include <qsortfilterproxymodel.h>
 #include "ui_MainForm.h"
 
 #include "Ecu/File.h"
@@ -20,6 +21,8 @@ class MainForm : public QMainWindow
 
     private:
         Ui::MainFormClass ui;
+        QSortFilterProxyModel* m_sortModel;
+
         EcuTuner::EcuFile* m_file;
 
 };
