@@ -20,4 +20,20 @@ namespace EcuTuner {
 
         return nullptr;
 	}
+
+    QString Utils::FormatPrecision(double value, unsigned int precission) {
+        QString tempStr = QString::number(value, 'f', precission);
+
+        int dotPos = tempStr.indexOf(".");
+
+        if (dotPos == -1) {
+            return tempStr + (precission > 0 ? "." : "") + QString().fill('0', precission);
+        } else {
+            return tempStr + QString().fill('0', precission - (tempStr.length() - dotPos - 1));
+            
+        }
+
+        return tempStr;
+    }
+
 }

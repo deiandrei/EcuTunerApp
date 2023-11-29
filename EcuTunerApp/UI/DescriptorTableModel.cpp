@@ -1,6 +1,7 @@
 #include "DescriptorTableModel.h"
 
 #include <QBrush>
+#include "../Common/Utils.h"
 #include "../Descriptor/DescriptorReader.h"
 
 DescriptorTableModel::DescriptorTableModel(EcuTuner::EcuFile* file, EcuTuner::Descriptor* descriptor, QObject* parent) : QAbstractTableModel(parent),
@@ -47,13 +48,15 @@ QVariant DescriptorTableModel::headerData(int section, Qt::Orientation orientati
     if (role == Qt::DisplayRole) {
         if (orientation == Qt::Horizontal && ((m_descriptor->AxisData->InverseMap && m_descriptor->AxisY) || (!m_descriptor->AxisData->InverseMap && m_descriptor->AxisX))) {
             double data = EcuTuner::DescriptorReader::ReadAxisValue(bb, m_descriptor->AxisData->InverseMap ? m_descriptor->AxisY : m_descriptor->AxisX, section);
+            int precision = m_descriptor->AxisData->InverseMap ? m_descriptor->AxisY->Precision : m_descriptor->AxisX->Precision;
 
-            return QString::number(data);
+            return EcuTuner::Utils::FormatPrecision(data, precision);
         }
         else if (orientation == Qt::Vertical && ((m_descriptor->AxisData->InverseMap && m_descriptor->AxisX) || (!m_descriptor->AxisData->InverseMap && m_descriptor->AxisY))) {
             double data = EcuTuner::DescriptorReader::ReadAxisValue(bb, m_descriptor->AxisData->InverseMap ? m_descriptor->AxisX : m_descriptor->AxisY, section);
+            int precision = m_descriptor->AxisData->InverseMap ? m_descriptor->AxisX->Precision : m_descriptor->AxisY->Precision;
 
-            return QString::number(data);
+            return EcuTuner::Utils::FormatPrecision(data, precision);
         }
     }
     else if (role == Qt::SizeHintRole) {
@@ -76,8 +79,8 @@ QVariant DescriptorTableModel::data(const QModelIndex& index, int role) const {
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
         double data = dataAxis->InverseMap ? EcuTuner::DescriptorReader::ReadDataAxisValue(bb, dataAxis, index.column(), index.row()) : EcuTuner::DescriptorReader::ReadDataAxisValue(bb, dataAxis, index.row(), index.column());
-
-        return QString::number(data);
+        
+        return EcuTuner::Utils::FormatPrecision(data, dataAxis->Precision);
     }
     else if (role == Qt::BackgroundRole) {
         float normalizedDistance = (data(index, Qt::DisplayRole).toString().toDouble() - m_minValue) / (m_maxValue - m_minValue);
@@ -115,6 +118,14 @@ bool DescriptorTableModel::setData(const QModelIndex& index, const QVariant& val
     }
 
     return false;
+}
+
+void DescriptorTableModel::incrementIndex(const QModelIndex& index, double factor) {
+    if (!checkIndex(index)) return;
+
+    double step = m_descriptor->AxisData->ValueFactor;
+
+    setData(index, data(index).toDouble() + factor * step);
 }
 
 Qt::ItemFlags DescriptorTableModel::flags(const QModelIndex& index) const {

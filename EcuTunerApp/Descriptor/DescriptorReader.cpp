@@ -106,7 +106,7 @@ namespace EcuTuner {
 		int dataPos = dataAxis->GetTableOffset(row, column);
 
 		if (dataAxis->BlockSize == 1) {
-			byte1 valueToSet = dataAxis->UnParse(value);
+			byte1 valueToSet = round(dataAxis->UnParse(value));
 			memcpy(bb->Data() + dataPos, &valueToSet, dataAxis->BlockSize);
 		}
 		else if (dataAxis->BlockSize == 2) {

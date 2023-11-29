@@ -41,8 +41,9 @@ namespace EcuTuner {
 			int dataAxisOffsetId = header.indexOf("Fieldvalues.StartAddr");
 			int dataAxisByteCountId = header.indexOf("DataOrg");
 			int dataAxisTypeId = header.indexOf("Type");
+			int dataAxisPrecisionId = header.indexOf("Precision");
 
-			if (nameId == -1 || aliasId == -1 || rowsId == -1 || columnsId == -1 || dataAxisOffsetId == -1 || dataAxisValueFactorId == -1 || dataAxisValueOffsetId == -1 || dataAxisByteCountId == -1) return {};
+			if (nameId == -1 || aliasId == -1 || rowsId == -1 || columnsId == -1 || dataAxisOffsetId == -1 || dataAxisValueFactorId == -1 || dataAxisValueOffsetId == -1 || dataAxisByteCountId == -1 || dataAxisTypeId == -1) return {};
 
 			// Axis columns
 
@@ -51,6 +52,7 @@ namespace EcuTuner {
 			int axisXValueOffsetId = header.indexOf("AxisX.Offset");
 			int axisXOffsetId = header.indexOf("AxisX.DataAddr");
 			int axisXByteCountId = header.indexOf("AxisX.DataOrg");
+			int axisXPrecisionId = header.indexOf("AxisX.Precision");
 
 			bool loadAxisX = !(axisXOffsetId == -1 || axisXValueFactorId == -1 || axisXValueOffsetId == -1);
 
@@ -59,6 +61,7 @@ namespace EcuTuner {
 			int axisYValueOffsetId = header.indexOf("AxisY.Offset");
 			int axisYOffsetId = header.indexOf("AxisY.DataAddr");
 			int axisYByteCountId = header.indexOf("AxisY.DataOrg");
+			int axisYPrecisionId = header.indexOf("AxisY.Precision");
 
 			bool loadAxisY = !(axisYOffsetId == -1 || axisYValueFactorId == -1 || axisYValueOffsetId == -1);
 
@@ -82,6 +85,7 @@ namespace EcuTuner {
 				descriptor->AxisData->Columns = descriptorData[columnsId].toInt();
 				descriptor->AxisData->ValueFactor = descriptorData[dataAxisValueFactorId].toDouble();
 				descriptor->AxisData->ValueOffset = descriptorData[dataAxisValueOffsetId].toDouble();
+				if (dataAxisPrecisionId != -1) descriptor->AxisData->Precision = std::max(descriptorData[dataAxisPrecisionId].toInt(), 0);
 
 				// Load AxisX
 				if (loadAxisX) {
@@ -93,6 +97,7 @@ namespace EcuTuner {
 						descriptor->AxisX->BlockSize = ParseByteCount(descriptorData[axisXByteCountId]);
 						descriptor->AxisX->ValueFactor = descriptorData[axisXValueFactorId].toDouble();
 						descriptor->AxisX->ValueOffset = descriptorData[axisXValueOffsetId].toDouble();
+						if (axisXPrecisionId != -1) descriptor->AxisX->Precision = std::max(descriptorData[axisXPrecisionId].toInt(), 0);
 					}
 				}
 
@@ -106,6 +111,7 @@ namespace EcuTuner {
 						descriptor->AxisY->BlockSize = ParseByteCount(descriptorData[axisYByteCountId]);
 						descriptor->AxisY->ValueFactor = descriptorData[axisYValueFactorId].toDouble();
 						descriptor->AxisY->ValueOffset = descriptorData[axisYValueOffsetId].toDouble();
+						if (axisYPrecisionId != -1) descriptor->AxisY->Precision = std::max(descriptorData[axisYPrecisionId].toInt(), 0);
 					}
 				}
 				

@@ -21,6 +21,8 @@ class DescriptorTableModel : public QAbstractTableModel
         QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
         bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
 
+        void incrementIndex(const QModelIndex& index, double factor);
+
     protected:
         void UpdateMinMax();
 

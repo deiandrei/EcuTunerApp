@@ -8,6 +8,7 @@ namespace EcuTuner {
 	struct Axis {
 		int Offset;
 		int BlockSize;
+		unsigned int Precision;
 		
 		double ValueFactor;
 		double ValueOffset;
@@ -15,6 +16,7 @@ namespace EcuTuner {
 		Axis() {
 			Offset = 0;
 			BlockSize = 1;
+			Precision = 0;
 			ValueFactor = 1.0;
 			ValueOffset = 0.0;
 		}
@@ -58,8 +60,6 @@ namespace EcuTuner {
 
 			QString Name;
 			QString Alias;
-
-			
 
 	};
 
