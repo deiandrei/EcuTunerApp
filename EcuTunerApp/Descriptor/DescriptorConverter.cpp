@@ -36,6 +36,7 @@ namespace EcuTuner {
 			int aliasId = header.indexOf("IdName");
 			int rowsId = header.indexOf("Rows");
 			int columnsId = header.indexOf("Columns");
+			int folderId = header.indexOf("FolderName");
 			int dataAxisValueFactorId = header.indexOf("Fieldvalues.Factor");
 			int dataAxisValueOffsetId = header.indexOf("Fieldvalues.Offset");
 			int dataAxisOffsetId = header.indexOf("Fieldvalues.StartAddr");
@@ -75,6 +76,7 @@ namespace EcuTuner {
 
 				descriptor->Name = descriptorData[nameId];
 				descriptor->Alias = descriptorData[aliasId];
+				if (folderId != -1) descriptor->Folder = descriptorData[folderId];
 
 				// Load AxisData
 				descriptor->AxisData = new DataAxis;

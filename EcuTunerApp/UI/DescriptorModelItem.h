@@ -6,11 +6,10 @@
 
 #include "../Descriptor/Descriptor.h"
 
-enum FSType { FS_FOLDER, FS_FILE };
 
 class DescriptorModelItem {
 	public:
-		explicit DescriptorModelItem(EcuTuner::Descriptor* descriptor, DescriptorModelItem *parentItem = nullptr);
+		explicit DescriptorModelItem(QStringList data, EcuTuner::Descriptor* descriptor = nullptr, DescriptorModelItem *parentItem = nullptr);
 		~DescriptorModelItem();
 
 		void appendChild(DescriptorModelItem *child);
@@ -23,10 +22,12 @@ class DescriptorModelItem {
 		DescriptorModelItem* parentItem();
 
 		EcuTuner::Descriptor* GetDescriptor() { return m_descriptorPtr; }
+		QStringList Data() { return m_data; }
 
 	private:
 		QVector<DescriptorModelItem*> m_childItems;
 		DescriptorModelItem* m_parentItem;
+		QStringList m_data;
 
 		EcuTuner::Descriptor* m_descriptorPtr;
 

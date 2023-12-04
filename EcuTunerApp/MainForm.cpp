@@ -17,11 +17,12 @@
 MainForm::MainForm(QWidget *parent) : QMainWindow(parent) {
     ui.setupUi(this);
     m_sortModel = new QSortFilterProxyModel(this);
+    m_sortModel->setFilterCaseSensitivity(Qt::CaseSensitivity::CaseInsensitive);
     m_sortModel->setRecursiveFilteringEnabled(true);
 
     m_file = nullptr;
 
-    connect(ui.mapsTableView, &QTableView::doubleClicked, this, &MainForm::OpenDescriptorForm);
+    connect(ui.mapsTreeView, &QTableView::doubleClicked, this, &MainForm::OpenDescriptorForm);
 
     connect(ui.actionLoad_ECU_File, &QAction::triggered, [&]() {
         QString file = QFileDialog::getOpenFileName(nullptr, "Select ECU bin");
@@ -37,7 +38,7 @@ MainForm::MainForm(QWidget *parent) : QMainWindow(parent) {
 
         DescriptorModel* descriptorModel = new DescriptorModel(descriptors);
         m_sortModel->setSourceModel(descriptorModel);
-        ui.mapsTableView->setModel(m_sortModel);
+        ui.mapsTreeView->setModel(m_sortModel);
 
         ui.actionLoad_DescriptorPack->setEnabled(false); // disable it for now until I implement how to reload packs
     });
@@ -60,7 +61,7 @@ MainForm::MainForm(QWidget *parent) : QMainWindow(parent) {
             if (!descriptors.isEmpty()) {
                 DescriptorModel* descriptorModel = new DescriptorModel(descriptors);
                 m_sortModel->setSourceModel(descriptorModel);
-                ui.mapsTableView->setModel(m_sortModel);
+                ui.mapsTreeView->setModel(m_sortModel);
             }
         }
     });

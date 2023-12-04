@@ -80,7 +80,7 @@
          <widget class="QLineEdit" name="descriptorSearchLineEdit"/>
         </item>
         <item>
-         <widget class="QTableView" name="mapsTableView">
+         <widget class="QTreeView" name="mapsTreeView">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
             <horstretch>0</horstretch>

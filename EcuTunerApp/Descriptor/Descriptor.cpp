@@ -7,7 +7,7 @@ namespace EcuTuner {
 		AxisX(nullptr),
 		AxisY(nullptr)
 	{
-		
+		Folder = Name = Alias = "";
 	}
 
 }

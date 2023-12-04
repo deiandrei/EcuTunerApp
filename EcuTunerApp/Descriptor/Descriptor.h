@@ -61,6 +61,7 @@ namespace EcuTuner {
 			QString Name;
 			QString Alias;
 
+			QString Folder;
 	};
 
 }

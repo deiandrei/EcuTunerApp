@@ -32,12 +32,13 @@ class DescriptorModel : public QAbstractItemModel
 
 	    void doubleClicked(const QModelIndex& index);
 
-        void addItem(EcuTuner::Descriptor* descriptor);
+        void addItem(EcuTuner::Descriptor* descriptor, DescriptorModelItem* parent);
 
     private:
         void setupModelData(DescriptorModelItem* parent, QList<EcuTuner::Descriptor*> descriptors);
+        DescriptorModelItem* GetFolder(const QString& name);
 
-    DescriptorModelItem *rootItem;
+        DescriptorModelItem* m_rootItem;
 };
 //! [0]
 
