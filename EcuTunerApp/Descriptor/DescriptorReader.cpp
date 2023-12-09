@@ -24,12 +24,14 @@ namespace EcuTuner {
 				if (element.tagName() == "Descriptor") {
 					QDomElement nameElement = element.firstChildElement("Name");
 					QDomElement aliasElement = element.firstChildElement("Alias");
+					QDomElement folderElement = element.firstChildElement("Folder");
 
 					if (nameElement.isNull() || aliasElement.isNull() || nameElement.text().isEmpty() || aliasElement.text().isEmpty()) continue;
 
 					Descriptor* descriptor = new Descriptor;
 					descriptor->Name = nameElement.text();
 					descriptor->Alias = aliasElement.text();
+					if (!folderElement.isNull()) descriptor->Folder = folderElement.text();
 					descriptor->AxisData = new DataAxis;
 
 					QDomElement dataAxisElement = element.firstChildElement("AxisData");
@@ -58,7 +60,55 @@ namespace EcuTuner {
 			}
 		}
 
+		delete xmlFile;
+
 		return descriptors;
+	}
+
+	void DescriptorReader::WriteDescriptorsToFile(QList<Descriptor*>& descriptors, const QString& fileName) {
+		QFile* file = new QFile(fileName);
+		if (!file->open(QIODevice::WriteOnly | QIODevice::Text))
+		{
+			QMessageBox::critical(0, "Save XML File Problem", "Couldn't save file", QMessageBox::Ok);
+		}
+
+		QDomDocument* doc = new QDomDocument();
+		QDomElement rootNode = doc->createElement("DescriptorPack");
+		doc->appendChild(rootNode);
+		
+		for (auto descriptor : descriptors) {
+			QDomElement descriptorElement = doc->createElement("Descriptor");
+			rootNode.appendChild(descriptorElement);
+
+			AddElementWithName(doc, &descriptorElement, "Name", descriptor->Name);
+			AddElementWithName(doc, &descriptorElement, "Alias", descriptor->Alias);
+			AddElementWithName(doc, &descriptorElement, "Folder", descriptor->Folder);
+
+			QDomElement dataAxisElement = doc->createElement("AxisData");
+			descriptorElement.appendChild(dataAxisElement);
+			AddAxisElements(doc, &dataAxisElement, descriptor->AxisData);
+			AddElementWithName(doc, &dataAxisElement, "Rows", QString::number(descriptor->AxisData->Rows));
+			AddElementWithName(doc, &dataAxisElement, "Columns", QString::number(descriptor->AxisData->Columns));
+			AddElementWithName(doc, &dataAxisElement, "InverseMap", QString::number((int)descriptor->AxisData->InverseMap));
+
+			if (descriptor->AxisX) {
+				QDomElement axisXElement = doc->createElement("AxisX");
+				descriptorElement.appendChild(axisXElement);
+				AddAxisElements(doc, &axisXElement, descriptor->AxisX);
+			}
+			if (descriptor->AxisY) {
+				QDomElement axisYElement = doc->createElement("AxisY");
+				descriptorElement.appendChild(axisYElement);
+				AddAxisElements(doc, &axisYElement, descriptor->AxisY);
+			}
+		}
+
+		QTextStream stream(file);
+		stream.setCodec("UTF-8");
+		stream << doc->toString();
+		file->close();
+
+		delete file;
 	}
 
 	void DescriptorReader::ParseAxisElement(QDomElement* element, EcuTuner::Axis* axis) {
@@ -66,6 +116,21 @@ namespace EcuTuner {
 		if (!element->firstChildElement("BlockSize").isNull()) axis->BlockSize = element->firstChildElement("BlockSize").text().toInt();
 		if (!element->firstChildElement("ValueFactor").isNull()) axis->ValueFactor = element->firstChildElement("ValueFactor").text().toDouble();
 		if (!element->firstChildElement("ValueOffset").isNull()) axis->ValueOffset = element->firstChildElement("ValueOffset").text().toDouble();
+		if (!element->firstChildElement("Precision").isNull()) axis->Precision = element->firstChildElement("Precision").text().toDouble();
+	}
+
+	void DescriptorReader::AddAxisElements(QDomDocument* doc, QDomElement* parent, Axis* axis) {
+		AddElementWithName(doc, parent, "Offset", QString::number(axis->Offset));
+		AddElementWithName(doc, parent, "BlockSize", QString::number(axis->BlockSize));
+		AddElementWithName(doc, parent, "ValueFactor", QString::number(axis->ValueFactor));
+		AddElementWithName(doc, parent, "ValueOffset", QString::number(axis->ValueOffset));
+		AddElementWithName(doc, parent, "Precision", QString::number(axis->Precision));
+	}
+
+	void DescriptorReader::AddElementWithName(QDomDocument* doc, QDomElement* parent, QString tagName, QString value) {
+		QDomElement folderElement = doc->createElement(tagName);
+		folderElement.appendChild(doc->createTextNode(value));
+		parent->appendChild(folderElement);
 	}
 
 	double DescriptorReader::ReadDataAxisValue(ByteBuffer* bb, DataAxis* dataAxis, int row, int column) {

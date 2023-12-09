@@ -70,6 +70,12 @@
     <ClCompile Include="Descriptor\DescriptorConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UI\UR\URManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UR\CommandDescriptorValue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Descriptor\Descriptor.h">
@@ -96,6 +102,9 @@
     <ClInclude Include="Descriptor\DescriptorConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="UI\UR\CommandDescriptorValue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ViewDescriptorForm.h">
@@ -105,6 +114,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="UI\DescriptorTableModel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="UI\UR\URManager.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

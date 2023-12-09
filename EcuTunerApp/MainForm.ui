@@ -18,66 +18,50 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Minimum</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Current ECU File</string>
-          </property>
-         </widget>
-        </item>
         <item>
          <widget class="QLineEdit" name="ecuFileLineEdit">
           <property name="readOnly">
            <bool>true</bool>
           </property>
           <property name="placeholderText">
-           <string>Browse file...</string>
+           <string>No ECU file loaded</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="descriptorFileLineEdit">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="placeholderText">
+           <string>No DescriptorPack loaded</string>
           </property>
          </widget>
         </item>
        </layout>
       </item>
-      <item>
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Minimum</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <item>
+     <widget class="QSplitter" name="splitter">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QWidget" name="">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="QLineEdit" name="descriptorSearchLineEdit"/>
+         <widget class="QLineEdit" name="descriptorSearchLineEdit">
+          <property name="placeholderText">
+           <string>Search descriptor names</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QTreeView" name="mapsTreeView">
@@ -90,11 +74,28 @@
          </widget>
         </item>
        </layout>
-      </item>
-      <item>
-       <widget class="QMdiArea" name="mainArea"/>
-      </item>
-     </layout>
+      </widget>
+      <widget class="QMdiArea" name="mainArea">
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="viewMode">
+        <enum>QMdiArea::SubWindowView</enum>
+       </property>
+       <property name="documentMode">
+        <bool>false</bool>
+       </property>
+       <property name="tabsClosable">
+        <bool>false</bool>
+       </property>
+       <property name="tabsMovable">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -111,10 +112,16 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionNew_project"/>
+    <addaction name="separator"/>
     <addaction name="actionLoad_ECU_File"/>
-    <addaction name="actionLoad_DescriptorPack"/>
     <addaction name="actionSave_As"/>
+    <addaction name="separator"/>
+    <addaction name="actionLoad_DescriptorPack"/>
     <addaction name="actionConvert_Csv_to_DescriptorPack"/>
+    <addaction name="actionSave_DescriptorPack"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -122,7 +129,14 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionUndo"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -161,8 +175,34 @@
    </property>
   </action>
   <action name="actionConvert_Csv_to_DescriptorPack">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Convert Csv to DescriptorPack</string>
+   </property>
+  </action>
+  <action name="actionNew_project">
+   <property name="text">
+    <string>New project</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="actionSave_DescriptorPack">
+   <property name="text">
+    <string>Save DescriptorPack</string>
    </property>
   </action>
  </widget>

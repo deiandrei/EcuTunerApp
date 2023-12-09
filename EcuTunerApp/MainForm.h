@@ -5,6 +5,7 @@
 #include "ui_MainForm.h"
 
 #include "Ecu/File.h"
+#include "Descriptor/Descriptor.h"
 
 class MainForm : public QMainWindow
 {
@@ -18,11 +19,17 @@ class MainForm : public QMainWindow
 
     public slots:
         void OpenDescriptorForm(const QModelIndex& index);
+        void ContextMenuForDescriptorTable(const QPoint& point);
+
+    private:
+        void CreateContextMenus();
 
     private:
         Ui::MainFormClass ui;
         QSortFilterProxyModel* m_sortModel;
+        QMenu* m_descriptorsContextMenu;
 
         EcuTuner::EcuFile* m_file;
+        QList<EcuTuner::Descriptor*> m_descriptors;
 
 };

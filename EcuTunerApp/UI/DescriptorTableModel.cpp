@@ -3,6 +3,7 @@
 #include <QBrush>
 #include "../Common/Utils.h"
 #include "../Descriptor/DescriptorReader.h"
+#include "../UI/UR/CommandDescriptorValue.h"
 
 DescriptorTableModel::DescriptorTableModel(EcuTuner::EcuFile* file, EcuTuner::Descriptor* descriptor, QObject* parent) : QAbstractTableModel(parent),
     m_ecuFile(file),
@@ -14,20 +15,22 @@ DescriptorTableModel::DescriptorTableModel(EcuTuner::EcuFile* file, EcuTuner::De
 void DescriptorTableModel::UpdateMinMax() {
     // Calculate max and min
     m_ecuFile->GetBuffer()->Position() = m_descriptor->AxisData->Offset;
-    uint2 max = std::numeric_limits<uint2>::min();
-    uint2 min = std::numeric_limits<uint2>::max();
-    uint2 temp;
+    double max = -9999999999.0;
+    double min = 9999999999.0;
+    double temp = 0.0;
+    
     for (int i = 0; i < m_descriptor->AxisData->Rows; ++i) {
         for (int j = 0; j < m_descriptor->AxisData->Columns; ++j) {
-            temp = m_ecuFile->GetBuffer()->Read<uint2>();
+            temp = m_descriptor->AxisData->InverseMap ? EcuTuner::DescriptorReader::ReadDataAxisValue(m_ecuFile->GetBuffer(), m_descriptor->AxisData, j, i) : EcuTuner::DescriptorReader::ReadDataAxisValue(m_ecuFile->GetBuffer(), m_descriptor->AxisData, i, j);
 
             if (temp > max) max = temp;
             if (temp < min) min = temp;
         }
     }
+    
 
-    m_maxValue = m_descriptor->AxisData->Parse(max);
-    m_minValue = m_descriptor->AxisData->Parse(min);
+    m_maxValue = max;
+    m_minValue = min;
 }
 
 int DescriptorTableModel::rowCount(const QModelIndex& /*parent*/) const {
@@ -83,10 +86,15 @@ QVariant DescriptorTableModel::data(const QModelIndex& index, int role) const {
         return EcuTuner::Utils::FormatPrecision(data, dataAxis->Precision);
     }
     else if (role == Qt::BackgroundRole) {
-        float normalizedDistance = (data(index, Qt::DisplayRole).toString().toDouble() - m_minValue) / (m_maxValue - m_minValue);
-        normalizedDistance = std::min(std::max(normalizedDistance, 0.0f), 1.0f);
+        if (m_maxValue > m_minValue) {
+            float normalizedDistance = (data(index, Qt::DisplayRole).toString().toDouble() - m_minValue) / (m_maxValue - m_minValue);
+            normalizedDistance = std::min(std::max(normalizedDistance, 0.0f), 1.0f);
 
-		return QBrush(QColor::fromRgb((int)std::min(255.0f * 2.0f * normalizedDistance, 255.0f), (int)std::min(255.0f * 2.0f * (1.0f - normalizedDistance), 255.0f), 0));
+            return QBrush(QColor::fromRgb((int)std::min(255.0f * 2.0f * normalizedDistance, 255.0f), (int)std::min(255.0f * 2.0f * (1.0f - normalizedDistance), 255.0f), 0));
+        }
+        else {
+            return QBrush(QColor::fromRgb(255, 255, 0));
+        }
     }
     else if (role == Qt::TextAlignmentRole) {
         return Qt::AlignCenter;
@@ -98,22 +106,26 @@ QVariant DescriptorTableModel::data(const QModelIndex& index, int role) const {
 bool DescriptorTableModel::setData(const QModelIndex& index, const QVariant& value, int role) {
     EcuTuner::DataAxis* dataAxis = m_descriptor->AxisData;
     ByteBuffer* bb = m_ecuFile->GetBuffer();
+    double oldValue = data(index, role).toDouble();
 
     if (!dataAxis) return false;
 
     if (role == Qt::EditRole) {
-        if (!checkIndex(index) || value == data(index, role)) return false;
+        if (!checkIndex(index) || value == oldValue) return false;
         
         bool conversionStatus = 0;
         double valueFromUI = value.toString().toDouble(&conversionStatus);
         if (!conversionStatus) return false;
 
-        m_maxValue = std::max(m_maxValue, valueFromUI);
-        m_minValue = std::min(m_minValue, valueFromUI);
+        //URManager::Instance()->PushCommand(new CommandDescriptorValue(m_ecuFile, m_descriptor, index.row(), index.column(), valueFromUI, oldValue));
 
         if(dataAxis->InverseMap) EcuTuner::DescriptorReader::SetDataAxisValue(bb, dataAxis, index.column(), index.row(), valueFromUI);
         else EcuTuner::DescriptorReader::SetDataAxisValue(bb, dataAxis, index.row(), index.column(), valueFromUI);
         
+        UpdateMinMax();
+        
+        emit dataChanged(this->index(0,0), this->index(rowCount(), columnCount()));
+
         return true;
     }
 

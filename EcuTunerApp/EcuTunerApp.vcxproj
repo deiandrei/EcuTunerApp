@@ -94,6 +94,8 @@
     <ClCompile Include="UI\DescriptorModel.cpp" />
     <ClCompile Include="UI\DescriptorModelItem.cpp" />
     <ClCompile Include="UI\DescriptorTableModel.cpp" />
+    <ClCompile Include="UI\UR\CommandDescriptorValue.cpp" />
+    <ClCompile Include="UI\UR\URManager.cpp" />
     <ClCompile Include="ViewDescriptorForm.cpp" />
     <QtRcc Include="MainForm.qrc" />
     <QtUic Include="MainForm.ui" />
@@ -114,6 +116,8 @@
     <ClInclude Include="Descriptor\DescriptorConverter.h" />
     <ClInclude Include="Descriptor\DescriptorReader.h" />
     <ClInclude Include="Ecu\File.h" />
+    <ClInclude Include="UI\UR\CommandDescriptorValue.h" />
+    <QtMoc Include="UI\UR\URManager.h" />
     <QtMoc Include="UI\DescriptorTableModel.h" />
     <QtMoc Include="UI\DescriptorModel.h" />
     <ClInclude Include="UI\DescriptorModelItem.h" />
