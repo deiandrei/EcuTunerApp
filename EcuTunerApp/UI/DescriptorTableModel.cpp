@@ -140,6 +140,12 @@ void DescriptorTableModel::incrementIndex(const QModelIndex& index, double facto
     setData(index, data(index).toDouble() + factor * step);
 }
 
+void DescriptorTableModel::addMultiplyIndex(const QModelIndex& index, double number, double multiplyFactor) {
+    if (!checkIndex(index)) return;
+
+    setData(index, data(index).toDouble() * multiplyFactor + number);
+}
+
 Qt::ItemFlags DescriptorTableModel::flags(const QModelIndex& index) const {
     return Qt::ItemIsEditable | QAbstractTableModel::flags(index);
 }

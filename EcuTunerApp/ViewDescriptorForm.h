@@ -19,6 +19,7 @@ class ViewDescriptorForm : public QWidget
 
 	private:
 		void IncrementSelectedIndexes(double factor);
+		void AddMultiplySelectedIndexes(double number, double multiplyFactor);
 
 	protected slots:
 		void CopySelectedIndex();

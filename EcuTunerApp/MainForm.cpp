@@ -53,13 +53,13 @@ MainForm::MainForm(QWidget *parent) : QMainWindow(parent) {
     });
 
     connect(ui.actionLoad_ECU_File, &QAction::triggered, [&]() {
-        QString file = QFileDialog::getOpenFileName(nullptr, "Select ECU bin");
+        QString file = QFileDialog::getOpenFileName(nullptr, "Select ECU bin", "", "*.bin");
         ui.ecuFileLineEdit->setText(file);
         SetECUFile(file);
     });
 
     connect(ui.actionSave_As, &QAction::triggered, [&]() {
-        QString fileSaveName = QFileDialog::getSaveFileName(nullptr, "Save ECU bin");
+        QString fileSaveName = QFileDialog::getSaveFileName(nullptr, "Save ECU bin", "", "*.bin");
         if (!fileSaveName.isEmpty()) {
             std::ofstream writer(fileSaveName.toStdString(), std::ios::binary);
 
@@ -102,7 +102,7 @@ MainForm::MainForm(QWidget *parent) : QMainWindow(parent) {
     });
 
     connect(ui.actionConvert_Csv_to_DescriptorPack, &QAction::triggered, [&]() {
-        QString descriptorFile = QFileDialog::getOpenFileName(nullptr, "Select CSV file");
+        QString descriptorFile = QFileDialog::getOpenFileName(nullptr, "Select CSV file", "", "*.csv");
 
         if (!descriptorFile.isEmpty()) {
             m_descriptors = EcuTuner::DescriptorConverter::ConvertFromCsv(descriptorFile);
@@ -161,6 +161,7 @@ void MainForm::OpenDescriptorForm(const QModelIndex& index) {
 	ViewDescriptorForm* vdForm = new ViewDescriptorForm(m_file, descriptor, ui.mainArea);
 	ui.mainArea->addSubWindow(vdForm);
 	vdForm->showNormal();
+    vdForm->adjustSize();
 }
 
 void MainForm::SetECUFile(const QString& file) {
